@@ -93,6 +93,26 @@ PID=$(pgrep -f "java -jar ords.war")
 kill -9 ${PID}
 rm -rf /tmp/output.log
 
+# -- 
+cd ${ORDS_SOFTLOC}/config/ords
+
+ORDSXML=${ORDS_SOFTLOC}/config/ords/defaults.xml
+sed '/<\/properties>/d' ${ORDSXML} > ${ORDSXML}.tmp
+
+echo -n '<entry key="jdbc.InitialLimit">10</entry>
+<entry key="jdbc.MinLimit">10</entry>
+<entry key="jdbc.MaxLimit">100</entry>
+<entry key="jdbc.MaxStatementsLimit">10</entry>
+<entry key="jdbc.InactivityTimeout">1800</entry>
+<entry key="jdbc.statementTimeout">900</entry>
+</properties>
+'  >> ${ORDSXML}.tmp
+
+mv ${ORDSXML} ${ORDSXML}.old
+mv ${ORDSXML}.tmp ${ORDSXML}
+#--
+
+
 MENSAGEM="${AMERELO}PRONTO.${VERDE}.\nAgora execute o script ${VERMELHO}6_executar_APEX_SERVER.sh${END}. Para inicializar o ORDS e poder acessar o APEX via WEB."
  mensagem_verde
 
