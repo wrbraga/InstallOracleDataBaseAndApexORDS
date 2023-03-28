@@ -75,5 +75,24 @@ Enter 1 if using HTTP or 2 if using HTTPS [1]: ${VERMELHO}1${END}
 "
 mensagem_verde
 
- java -jar ords.war
+MENSAGEM="Aguarde a ordem para executar o script  ${VERDE}6_executar_APEX_SERVER.sh${VERMELHO}."
+mensagem_vermelho
+
+ java -jar ords.war > /tmp/output.log 2>&1 &
+
+while : 
+do 
+ SAIDA=$(grep jetty /tmp/output.log)
+ if ! [ -z "${SAIDA}" ] 
+ then   
+    break
+ fi
+done
+
+PID=$(pgrep -f "java -jar ords.war")
+kill -9 ${PID}
+rm -rf /tmp/output.log
+
+MENSAGEM="${AMERELO}PRONTO.${VERDE}.\nAgora execute o script ${VERMELHO}6_executar_APEX_SERVER.sh${END}. Para inicializar o ORDS e poder acessar o APEX via WEB."
+ mensagem_verde
 

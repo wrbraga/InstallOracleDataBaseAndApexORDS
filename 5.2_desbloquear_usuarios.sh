@@ -27,3 +27,6 @@ sqlplus / as sysdba <<EOF
  ALTER USER apex_listener IDENTIFIED BY Oracle_2023 ACCOUNT UNLOCK;
  ALTER USER apex_rest_public_user IDENTIFIED BY Oracle_2023 ACCOUNT UNLOCK;
 EOF
+
+MENSAGEM="Usuários do APEX desbloqueados com ${AMERELO}SUCESSO.${VERDE}.\nAgora execute o script ${VERMELHO}5.3_configuracao_inicial_ORDS.sh${END}. Para preparar a instalação do ORDS."
+ mensagem_verde
