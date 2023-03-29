@@ -24,14 +24,22 @@ export ORIGEM=/mnt
 
 
 echo ${ORIGEM} > /tmp/origem.tmp
-. "${ORIGEM}/scripts/functions.sh"
+DOWNLOAD=${ORIGEM}/download
+SCRIPTS=${ORIGEM}/scripts
+. "${SCRIPTS}/functions.sh"
+. "${SCRIPTS}/set_variaveis.sh"
 
 
-MENSAGEM="Não faça isso em produção!\nDesabilitando o firewall!"
+MENSAGEM="Ajustando as configurações do firewall."
 mensagem_vermelho
-systemctl stop firewalld.service
-systemctl disable firewalld.service
+firewall-cmd --zone=public --permanent --add-port=1521/tcp
+firewall-cmd --zone=public --permanent --add-port=1522/tcp
+firewall-cmd --zone=public --permanent --add-port=5500/tcp
+firewall-cmd --zone=public --permanent --add-port=8443/tcp
+firewall-cmd --reload
 
+MENSAGEM="Ajustando as configurações do SELinux."
+mensagem_vermelho
 sed -e "s/SELINUX=enforcing/SELINUX=permissive/g" /etc/selinux/config > /etc/selinux/config.new
 rm -f /etc/selinux/config
 mv /etc/selinux/config.new /etc/selinux/config
@@ -42,7 +50,7 @@ mensagem_verde
 IPS=$(ip a | grep "inet" | grep "brd" | tr " " "\t" | cut -f6 | tr "/" "\t" | cut -f1)
 HOSTNAME=$(hostname | tr '.' "\t" | cut -f1)
 for ip in ${IPS}; do 
-  echo ${ip} $HOSTNAME `hostname` >> /etc/hosts; 
+  echo ${ip} ${HOSTNAME} `hostname` >> /etc/hosts; 
 done
 
 #Instalando o OpenJDK
@@ -96,11 +104,17 @@ else
   yum -y oracle-database-ee-19c.x86_64;
 fi
 
-## Copiando o script de ajuste das variaveis de ambiente ##
+MENSAGEM="Copiando o script de ajuste das variaveis de ambiente"
+mensagem_verde
 cp $ORIGEM/scripts/set_variaveis.sh /home/oracle
 chmod +x /home/oracle/set_variaveis.sh
 chown oracle:oinstall /home/oracle/set_variaveis.sh
 echo '. /home/oracle/set_variaveis.sh' >> /home/oracle/.bashrc
+
+MENSAGEM="Criando a pasta com os scripts em ${AMARELO}${ORACLE_BASE}/scripts"
+mensagem_verde
+mkdir -p ${ORACLE_BASE}/scripts
+cp ${SCRIPTS}/*.sh ${ORACLE_BASE}/scripts
 
 #-- comando para criação do listener (NETCA)
 ## 
