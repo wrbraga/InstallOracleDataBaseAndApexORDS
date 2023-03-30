@@ -7,7 +7,8 @@ fi
 
 echo -e "Este processo demora alguns segundos .. pode levar até mesmo alguns minutos. \nAguarde a mensagem indicando a finalização das tarefas e liberando para execução do próximo script."
 
-${ORACLE_HOME}/bin/lsnrctl start > /dev/null 2>&1
+${ORACLE_HOME}/bin/lsnrctl start 
+#> /dev/null 2>&1
 
 sleep 10s
 
@@ -18,10 +19,11 @@ sleep 10s
 echo -e "Conectando ao banco de dados para abrir o PDB01 que será usado pelo APEX.  Aguarde ...\n"
 
 /bin/bash -c "${ORACLE_HOME}/bin/sqlplus -s /nolog << EOF
-connect / as sysdba
-startup
-alter pluggable database PDB01 open
-quit
+connect / as sysdba;
+startup;
+alter pluggable database PDB01 open;
+alter session set container=PDB01;
+quit;
 EOF"
 
 sleep 10s

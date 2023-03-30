@@ -17,3 +17,5 @@ echo "Finalizando o Listener..."
 $ORACLE_HOME/bin/lsnrctl stop > /dev/null 2>&1
 
 echo "Tudo fechado!"
+
+rm -f /tmp/status.tmp > /dev/null

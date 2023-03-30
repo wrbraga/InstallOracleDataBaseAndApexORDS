@@ -36,6 +36,7 @@ firewall-cmd --zone=public --permanent --add-port=1521/tcp
 firewall-cmd --zone=public --permanent --add-port=1522/tcp
 firewall-cmd --zone=public --permanent --add-port=5500/tcp
 firewall-cmd --zone=public --permanent --add-port=8443/tcp
+firewall-cmd --zone=public --permanent --add-port=8080/tcp
 firewall-cmd --reload
 
 MENSAGEM="Ajustando as configurações do SELinux."

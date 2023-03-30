@@ -1,15 +1,24 @@
 #!/bin/bash
+if [ $(id -u) -eq 0 ]; then
+    echo "Mude para  o usuáro ORACLE e execute novamente o script."
+   exit 1
+fi
 
-if [ -f /tmp/origem.tmp ]; then
- ORIGEM=$(cat /tmp/origem.tmp)
- export ORIGEM
+if [ -z "$(netstat -n -4 | grep 1521)" ]; then 
+    echo "Banco de dados fechado!"
+    echo "Execute o script start.sh para abrir as conexões com o banco de dados."
+    exit 1;
+fi
+
+if [ -d /opt/oracle/scripts ]; then
+ ORIGEM=/opt/oracle/
 else 
  echo "Digite o caminho para a pasta que contem as pastas 'download' e 'scripts':"
  read ORIGEM;
- echo ${ORIGEM} > /tmp/origem.tmp
 fi
+echo ${ORIGEM} > /tmp/origem.tmp
+export ORIGEM
 
-DOWNLOAD=${ORIGEM}/download
 SCRIPTS=${ORIGEM}/scripts
 . "${SCRIPTS}/functions.sh"
 . "${SCRIPTS}/set_variaveis.sh"
