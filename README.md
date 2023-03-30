@@ -54,3 +54,5 @@ wget -c https://download.oracle.com/otn_software/apex/apex_21.2_en.zip
 ```bash
 wget -c https://download.oracle.com/otn_software/java/ords/ords-21.4.2.062.1806.zip
 ```
+## Tip for improve the performance in the libvirt/kvm
+Using libvirt enable the option "**Enable share memory**" in Memory setting.
