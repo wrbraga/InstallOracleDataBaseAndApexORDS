@@ -1,4 +1,12 @@
 #!/bin/bash
+echo "Você já alterou a variável ORIGEM neste arquivo? [S/N]: "
+read RESP
+
+RESP=$(echo ${RESP} | tr "[:lower:]" "[:upper:]")
+if ! [  "$RESP" == "S" ]; then 
+    echo "Abra este arquivo e altere a variável ORIGEM. Aponte para o diretório que contem as pastas 'download' e 'scripts'.'"
+    exit 1
+fi
 
 export ORIGEM=/mnt
 # Altere a variavel ORIGEM de /mnt/APEX para o diretório que contem os arquivos
@@ -21,14 +29,11 @@ export ORIGEM=/mnt
 #    ├── start.sh
 #    └── stop.sh
 
-
-
 echo ${ORIGEM} > /tmp/origem.tmp
 DOWNLOAD=${ORIGEM}/download
 SCRIPTS=${ORIGEM}/scripts
 . "${SCRIPTS}/functions.sh"
 . "${SCRIPTS}/set_variaveis.sh"
-
 
 MENSAGEM="Ajustando as configurações do firewall."
 mensagem_vermelho
@@ -51,7 +56,7 @@ mensagem_verde
 IPS=$(ip a | grep "inet" | grep "brd" | tr " " "\t" | cut -f6 | tr "/" "\t" | cut -f1)
 HOSTNAME=$(hostname | tr '.' "\t" | cut -f1)
 for ip in ${IPS}; do 
-  echo ${ip} ${HOSTNAME} `hostname` >> /etc/hosts; 
+  echo ${ip} ${HOSTNAME} ${HOSTNAME}.localhost >> /etc/hosts; 
 done
 
 #Instalando o OpenJDK
@@ -82,14 +87,14 @@ if [ `grep oracle /etc/passwd` ]; then
   MENSAGEM= "${AMARELO}Achei o usuário. Próxima etapa."; 
   mensagem_verde
 else 
-  echo "Não achei o usuário .. Criando o usuario oracle!"; 
+  echo "Não achei o usuário .. Criando o usuario oracle."; 
   useradd oracle;
   echo "Defina uma senha para o usuario oracle:"; 
   passwd oracle;
 fi
 
 # Incluindo o usuario oracle nos grupos necessarios
-MENSAGEM="Incluindo o usuário oracle nos grupos necessários!"
+MENSAGEM="Incluindo o usuário oracle nos grupos necessários."
 mensagem_verde
 usermod -g oinstall -aG dba,oper,backupdba,dgdba,kmdba,racdba oracle
 
@@ -100,7 +105,7 @@ if [ -f "${RPM}" ]; then
  mensagem_verde;
   yum -y localinstall ${RPM};
 else
- MENSAGEM="Fazendo a instalação via ${VERMELHO}repositório online{END}";
+ MENSAGEM="Fazendo a instalação via ${VERMELHO}repositório online${END}.\nVai demorar ... são quase  ${VERMELHO}2.4GB${END} de download.";
  mensagem_verde;
   yum -y oracle-database-ee-19c.x86_64;
 fi
@@ -116,6 +121,8 @@ MENSAGEM="Criando a pasta com os scripts em ${AMARELO}${ORACLE_BASE}/scripts"
 mensagem_verde
 mkdir -p ${ORACLE_BASE}/scripts
 cp ${SCRIPTS}/*.sh ${ORACLE_BASE}/scripts
+chmod +x ${SCRIPTS}/*.sh
+chown oracle:oinstall ${SCRIPTS}/*.sh
 
 #-- comando para criação do listener (NETCA)
 ## 
@@ -130,7 +137,7 @@ mensagem_verde
 sudo -u oracle /opt/oracle/product/19c/dbhome_1/bin/netca -silent -responsefile /home/oracle/netca.rsp
 
 echo
-MENSAGEM="Vou mudar para o usuário ${VERMELHO}oracle${VERDE}.\nExecute o segundo script ${VERMELHO}2_cria_database_no_oracle.sh. \n${AMARELO}LEMBRE-SE:${VERDE}Esta etapa é a mais ${VERMELHO}demorada!"
+MENSAGEM="Vou mudar para o usuário ${VERMELHO}oracle${VERDE}.\nExecute o segundo script ${VERMELHO}2_cria_database_no_oracle.sh. \n${AMARELO}LEMBRE-SE:${VERDE}Esta etapa é a mais ${VERMELHO}demorada."
 mensagem_verde
 su - oracle
 
