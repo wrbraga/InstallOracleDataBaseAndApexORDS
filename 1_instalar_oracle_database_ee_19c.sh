@@ -47,7 +47,6 @@ fi
 #    └── stop.sh
 
 echo ${ORIGEM} > /tmp/origem.tmp
-chown oracle:oinstall /tmp/origem.tmp
 DOWNLOAD=${ORIGEM}/download
 SCRIPTS=${ORIGEM}/scripts
 . "${SCRIPTS}/functions.sh"
@@ -146,6 +145,7 @@ mkdir -p ${ORACLE_BASE}/scripts
 cp ${SCRIPTS}/*.sh ${ORACLE_BASE}/scripts
 chmod +x ${SCRIPTS}/*.sh
 chown -R oracle:oinstall ${SCRIPTS}
+chown oracle:oinstall /tmp/origem.tmp
 
 #-- comando para criação do listener (NETCA)
 ## 
