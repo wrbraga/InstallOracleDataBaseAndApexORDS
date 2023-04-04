@@ -20,7 +20,6 @@ exit
 fi 
 
 echo -e "
-#
 db.hostname=${HOSTNAME}
 db.port=1521
 db.servicename=PDB01
@@ -78,20 +77,21 @@ mensagem_verde
 MENSAGEM="Aguarde a ordem para executar o script  ${VERDE}6_executar_APEX_SERVER.sh${VERMELHO}."
 mensagem_vermelho
 
- java -jar ords.war > /tmp/output.log 2>&1 &
+#java -jar ords.war > /tmp/output.log 2>&1 &
+java -jar ords.war
 
-while : 
-do 
- SAIDA=$(grep jetty /tmp/output.log)
- if ! [ -z "${SAIDA}" ] 
- then   
-    break
- fi
-done
+#while : 
+#do 
+# SAIDA=$(grep jetty /tmp/output.log)
+# if ! [ -z "${SAIDA}" ] 
+# then   
+#    break
+# fi
+#done
 
-PID=$(pgrep -f "java -jar ords.war")
-kill -9 ${PID}
-rm -rf /tmp/output.log
+#PID=$(pgrep -f "java -jar ords.war")
+#kill -9 ${PID}
+#rm -rf /tmp/output.log
 
 # -- 
 cd ${ORDS_SOFTLOC}/config/ords

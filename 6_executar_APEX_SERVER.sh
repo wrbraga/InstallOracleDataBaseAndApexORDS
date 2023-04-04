@@ -4,7 +4,7 @@ if [ $(id -u) -eq 0 ]; then
    exit 1
 fi
 
-if [ -z "$(netstat -n -4 | grep 1521)" ]; then 
+if [ -z "$(netstat -n | grep 1521)" ]; then 
     echo "Banco de dados fechado!"
     echo "Execute o script start.sh para abrir as conexões com o banco de dados."
     exit 1;
@@ -43,6 +43,7 @@ done
 MENSAGEM="Pronto. Já pode abrir o browser e acessar o APEX."
 mensagem_verde
 
+HOSTNAME=$(hostname | tr '.' '\t' | cut -f1)
 IP=$(cat /etc/hosts | grep $HOSTNAME | head -1 | tr ' ' '\t'| cut -f1)
 MENSAGEM="
 Abra seu navegador no endereço abaixo e use os dados de ${VERMELHO}WORKSPACE, USER e PASSWORD${VERDE} para acessar o APEX.\n${AMARELO}Parabéns${VERDE}. Você chegou ao final da instalação.

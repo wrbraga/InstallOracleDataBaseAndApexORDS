@@ -1,14 +1,31 @@
 #!/bin/bash
-echo "Você já alterou a variável ORIGEM neste arquivo? [S/N]: "
-read RESP
+clear
+echo -e "\e[0;32mIniciando a Instalação do Oracle Database, APEX e ORDS\e[0m";
+ORIGEM=""
+echo -e "\nVocê pode passar o caminho contendo os arquivos de script como parâmetros, exemplo:\n\e[0;33m$0 /mnt\e[0m"
+echo -e "\nO diretório 'download' armazena o pacote do java o banco de dados caso você já tenha baixado.\nEm 'scripts' deverão estar todos os scripts baixados do repositório do github.\n"
 
-RESP=$(echo ${RESP} | tr "[:lower:]" "[:upper:]")
-if ! [  "$RESP" == "S" ]; then 
-    echo "Abra este arquivo e altere a variável ORIGEM. Aponte para o diretório que contem as pastas 'download' e 'scripts'.'"
-    exit 1
+if [ -f "$1/scripts/functions.sh" ]; then
+	ORIGEM=$1
+	echo "Achei os scripts em $1"
+else
+echo "Entre com o caminho em que estão os diretórios 'download' e 'scripts' ou deixe vazio para sair da instalação: "
+while read -r caminho;
+do
+ if [ -z "$caminho" ]; then
+         break
+ fi
+
+ if [ -f "$caminho/scripts/functions.sh" ]; then
+  ORIGEM=$caminho
+  break
+ else
+  echo "Entre com um caminho valido: "
+ fi
+
+done
 fi
 
-export ORIGEM=/mnt
 # Altere a variavel ORIGEM de /mnt/APEX para o diretório que contem os arquivos
 # que serão usados na instalacao. lembre-se de manter a estrutura:
 #/mnt/APEX/   <<<< o diretório que você indicou na variavel
@@ -30,6 +47,7 @@ export ORIGEM=/mnt
 #    └── stop.sh
 
 echo ${ORIGEM} > /tmp/origem.tmp
+chown oracle:oinstall /tmp/origem.tmp
 DOWNLOAD=${ORIGEM}/download
 SCRIPTS=${ORIGEM}/scripts
 . "${SCRIPTS}/functions.sh"
@@ -37,10 +55,15 @@ SCRIPTS=${ORIGEM}/scripts
 
 MENSAGEM="Ajustando as configurações do firewall."
 mensagem_vermelho
+echo -e "Liberando a porta ${VERDE}1521${END}:"
 firewall-cmd --zone=public --permanent --add-port=1521/tcp
+echo -e "Liberando a porta ${VERDE}1522${END}:"
 firewall-cmd --zone=public --permanent --add-port=1522/tcp
+echo -e "Liberando a porta ${VERDE}5500${END}:"
 firewall-cmd --zone=public --permanent --add-port=5500/tcp
+echo -e "Liberando a porta ${VERDE}8443${END}:"
 firewall-cmd --zone=public --permanent --add-port=8443/tcp
+echo -e "Liberando a porta ${VERDE}8080${END}:"
 firewall-cmd --zone=public --permanent --add-port=8080/tcp
 firewall-cmd --reload
 
@@ -84,7 +107,7 @@ fi
 MENSAGEM="Criando grupos e ajustando user oracle"
 mensagem_verde
 if [ `grep oracle /etc/passwd` ]; then 
-  MENSAGEM= "${AMARELO}Achei o usuário. Próxima etapa."; 
+  MENSAGEM="${AMARELO}Achei o usuário. Próxima etapa."; 
   mensagem_verde
 else 
   echo "Não achei o usuário .. Criando o usuario oracle."; 
