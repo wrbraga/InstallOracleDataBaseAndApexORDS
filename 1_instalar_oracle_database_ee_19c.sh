@@ -145,7 +145,7 @@ mensagem_verde
 mkdir -p ${ORACLE_BASE}/scripts
 cp ${SCRIPTS}/*.sh ${ORACLE_BASE}/scripts
 chmod +x ${SCRIPTS}/*.sh
-chown oracle:oinstall ${SCRIPTS}/*.sh
+chown -R oracle:oinstall ${SCRIPTS}
 
 #-- comando para criação do listener (NETCA)
 ## 
